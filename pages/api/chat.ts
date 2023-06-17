@@ -44,9 +44,11 @@ const handler = async (req: Request): Promise<Response> => {
 
     encoding.free();
 
-    const stream = await OpenAIStream(model, promptToSend, key, messagesToSend);
+    const stream = await OpenAIStream();
 
-    return new Response(stream);
+    const data = JSON.stringify(stream);
+
+    return stream;
   } catch (error) {
     console.error(error);
     return new Response('Error', { status: 500 });

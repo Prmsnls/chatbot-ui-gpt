@@ -117,6 +117,8 @@ const Home: React.FC<HomeProps> = ({
         body: JSON.stringify(chatBody),
       });
 
+      console.log('response', response);
+
       if (!response.ok) {
         setLoading(false);
         setMessageIsStreaming(false);
@@ -124,6 +126,8 @@ const Home: React.FC<HomeProps> = ({
       }
 
       const data = response.body;
+
+      console.log(data);
 
       if (!data) {
         setLoading(false);
@@ -145,6 +149,7 @@ const Home: React.FC<HomeProps> = ({
       setLoading(false);
 
       const reader = data.getReader();
+      console.log('first', reader);
       const decoder = new TextDecoder();
       let done = false;
       let isFirst = true;
@@ -159,14 +164,16 @@ const Home: React.FC<HomeProps> = ({
         const { value, done: doneReading } = await reader.read();
         done = doneReading;
         const chunkValue = decoder.decode(value);
+        let UpdateChunkValue = await JSON.parse(chunkValue);
+        console.log('chunkValue', UpdateChunkValue);
 
-        text += chunkValue;
+         text += UpdateChunkValue?.results[0]?.text;
 
         if (isFirst) {
           isFirst = false;
           const updatedMessages: Message[] = [
             ...updatedConversation.messages,
-            { role: 'assistant', content: chunkValue },
+            { role: 'assistant', content: UpdateChunkValue?.results[0]?.text },
           ];
 
           updatedConversation = {
